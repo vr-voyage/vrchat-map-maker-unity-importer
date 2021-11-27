@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: TestArray
-  m_Shader: {fileID: 4800000, guid: 36909bf387f1f0c4b9fe6b650494ea5c, type: 3}
+  m_Shader: {fileID: 4800000, guid: 87ee2bafa68ebe84a898f85526e8aa95, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
@@ -20,7 +20,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BumpMap:
-        m_Texture: {fileID: 18700000, guid: 84144b959b3c9e5459b660b15fd2c504, type: 2}
+        m_Texture: {fileID: 18700000, guid: bca1cb49ce216894491b61deb1894f73, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 18700000, guid: e8af8aceefd97854ebdf9a2fd9d7a204, type: 2}
+        m_Texture: {fileID: 18700000, guid: a66311c3383d64d4084ff336a82f0f73, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:

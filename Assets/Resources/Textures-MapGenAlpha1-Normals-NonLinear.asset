@@ -6,7 +6,7 @@ Texture2DArray:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Textures-MapGenAlpha1-Normals-Linear
+  m_Name: Textures-MapGenAlpha1-Normals-NonLinear
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -14,7 +14,7 @@ Texture2DArray:
   m_DownscaleFallback: 0
   serializedVersion: 2
   m_ColorSpace: 1
-  m_Format: 96
+  m_Format: 97
   m_Width: 512
   m_Height: 512
   m_Depth: 14
