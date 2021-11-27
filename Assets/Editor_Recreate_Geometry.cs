@@ -14,9 +14,6 @@ namespace Myy
         const string buttonText = "Read photo data";
         SerializedObject serialO;
 
-        public GameObject rootObject;
-        SerializedProperty rootObjectSerialized;
-
         public Mesh[] floorLibrary;
         SerializedProperty floorLibrarySerialized;
         public Mesh[] wallsLibrary;
@@ -33,7 +30,7 @@ namespace Myy
         private void OnEnable()
         {
             serialO = new SerializedObject(this);
-            rootObjectSerialized = serialO.FindProperty("rootObject");
+
             floorLibrarySerialized = serialO.FindProperty("floorLibrary");
             wallsLibrarySerialized = serialO.FindProperty("wallsLibrary");
             photoOrScreenshotPathSerialized = serialO.FindProperty("photoOrScreenshotPath");
@@ -43,10 +40,10 @@ namespace Myy
 
         }
 
-        [MenuItem("Voyage / Load Geometry from picture")]
+        [MenuItem("Voyage / Load map from VRChat photo")]
         public static void ShowWindow()
         {
-            GetWindow(typeof(MapLoader), false, "Texture Array Generator");
+            GetWindow(typeof(MapLoader), false, "Map from VRChat Map-Maker");
         }
 
         private int Color32ToInt(Color32 color)
@@ -136,11 +133,60 @@ namespace Myy
             bool everythingOK = true;
             serialO.Update();
 
-            EditorGUILayout.PropertyField(rootObjectSerialized);
-            if (rootObject == null)
+            if (GUILayout.Button("Load default setup"))
             {
-                everythingOK = false;
+
+                /* Not going to check for every corner case at the moment */
+                if (floorMeshFilter == null)
+                {
+                    GameObject go = new GameObject("LoadedMap");
+                    go.transform.position = Vector3.zero;
+                    go.transform.rotation = Quaternion.identity;
+                    go.transform.localScale = Vector3.one;
+                    GameObject floor = new GameObject("Floor");
+                    floorMeshFilter = floor.AddComponent<MeshFilter>();
+                    MeshRenderer floorMeshRenderer = floor.AddComponent<MeshRenderer>();
+                    GameObject walls = new GameObject("Walls");
+                    wallsMeshFilter = walls.AddComponent<MeshFilter>();
+                    MeshRenderer wallsMeshRenderer = walls.AddComponent<MeshRenderer>();
+                    
+                    floor.transform.parent = go.transform;
+                    walls.transform.parent = floor.transform;
+
+                    Vector3 localPosition = walls.transform.localPosition;
+                    localPosition.y = 0.15f;
+                    walls.transform.localPosition = localPosition;
+
+                    Material material = Resources.Load<Material>("TestArray");
+                    if (material != null)
+                    {
+                        floorMeshRenderer.sharedMaterial = material;
+                        wallsMeshRenderer.sharedMaterial = material;
+                    }
+
+                }
+
+                Mesh[] meshes = Resources.LoadAll<Mesh>("RoomMakerParts");
+                Dictionary<string,Mesh> meshesDictionary = new Dictionary<string, Mesh>(meshes.Length);
+                foreach (Mesh mesh in meshes)
+                {
+                    meshesDictionary.Add(mesh.name, mesh);
+                }
+
+                floorLibrary = new Mesh[2];
+                meshesDictionary.TryGetValue("Ground", out floorLibrary[1]);
+
+                wallsLibrary = new Mesh[8];
+                meshesDictionary.TryGetValue("Wall", out wallsLibrary[1]);
+                meshesDictionary.TryGetValue("WallCornerLeft_WallCorner", out wallsLibrary[2]);
+                meshesDictionary.TryGetValue("WallCornerRight_WallCorner.001", out wallsLibrary[3]);
+                meshesDictionary.TryGetValue("WindowLeft", out wallsLibrary[4]);
+                meshesDictionary.TryGetValue("WindowWay", out wallsLibrary[5]);
+                meshesDictionary.TryGetValue("WindowRight", out wallsLibrary[6]);
+                meshesDictionary.TryGetValue("Doorway", out wallsLibrary[7]);
+
             }
+
 
             EditorGUILayout.PropertyField(floorLibrarySerialized);
             if (floorLibrary == null || floorLibrary.Length == 0)
@@ -171,7 +217,7 @@ namespace Myy
             {
                 photoOrScreenshotPath = EditorUtility.OpenFilePanel("Select data photo", "", "png");
             }
-            if (photoOrScreenshotPath == null)
+            if (photoOrScreenshotPath == null || photoOrScreenshotPath == "")
             {
                 everythingOK = false;
             }
@@ -189,8 +235,20 @@ namespace Myy
                 Color32[] data = texture.GetPixels32(0);
                 Color32 sig1 = data[0];
                 Color32 sig2 = data[1];
-                byte[] signature = {sig1.r, sig1.g, sig1.b, sig2.r, sig2.g, sig2.b};
-                Debug.Log($"{Encoding.UTF8.GetString(signature)}");
+                Color32 sig4 = data[3];
+                byte[] signature_bytes = {sig1.r, sig1.g, sig1.b, sig2.r, sig2.g, sig2.b};
+                string signature = Encoding.UTF8.GetString(signature_bytes);
+                Debug.Log($"Signature : {signature}");
+                if (signature != "VOYAGE")
+                {
+                    Debug.LogError("This is not a photo from the Map Maker (Alpha 1)");
+                    return;
+                }
+                if (sig4.r != 1)
+                {
+
+                    Debug.LogWarning("This loader is NOT supposed to handle this version. The result might be completely wrong !");
+                }
 
 
                 Mesh emptyMesh = new Mesh();
